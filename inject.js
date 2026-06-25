@@ -27,7 +27,17 @@
   // Idempotency guard: re-injection (reloads, multiple Runtime.evaluate calls)
   // must not stack observers/intervals.
   if (window.__slackTeammateTime && window.__slackTeammateTime.installed) {
-    window.__slackTeammateTime.refreshAll();
+    // setEnabled may be absent if an older version is still loaded in the page
+    // (e.g. right after an upgrade, before a reload) — guard against it.
+    if (
+      typeof window.__SLACKTIME_ENABLED__ === 'boolean' &&
+      typeof window.__slackTeammateTime.setEnabled === 'function'
+    ) {
+      window.__slackTeammateTime.setEnabled(window.__SLACKTIME_ENABLED__);
+    }
+    if (typeof window.__slackTeammateTime.refreshAll === 'function') {
+      window.__slackTeammateTime.refreshAll();
+    }
     return;
   }
 
@@ -249,6 +259,7 @@
   }
 
   function decorate(senderBtn) {
+    if (!enabled) return; // toggle off: render nothing
     if (senderBtn.getAttribute('data-tmt-done') === '1') return;
     const userId = senderBtn.getAttribute('data-message-sender');
     if (!userId) return;
@@ -298,6 +309,7 @@
   }
 
   function refreshAll() {
+    if (!enabled) return;
     const spans = document.querySelectorAll('.' + LABEL_CLASS);
     spans.forEach((span) => {
       const userId = span.getAttribute('data-user-id');
@@ -309,11 +321,36 @@
     });
   }
 
+  // Remove every injected label and reset the "done" markers so they can be
+  // re-added later when re-enabled.
+  function removeAllLabels() {
+    document.querySelectorAll('.' + LABEL_CLASS).forEach((s) => s.remove());
+    document
+      .querySelectorAll('[data-tmt-done]')
+      .forEach((el) => el.removeAttribute('data-tmt-done'));
+  }
+
+  // Live on/off toggle (driven by the menu bar app via the injector). Adds or
+  // removes the inline times instantly, without reloading Slack.
+  function setEnabled(on) {
+    on = on !== false;
+    if (on === enabled) return;
+    enabled = on;
+    if (!enabled) {
+      removeAllLabels();
+    } else {
+      scan(document);
+    }
+  }
+
   // ----------------------------------------------------------------------------
   // Bootstrap
   // ----------------------------------------------------------------------------
   let observer = null;
   let refreshInterval = null;
+  // Initial on/off state. The injector sets window.__SLACKTIME_ENABLED__ before
+  // running this script (default: on when unset).
+  let enabled = window.__SLACKTIME_ENABLED__ !== false;
 
   function start() {
     ensureStyle();
@@ -341,6 +378,8 @@
       config: CONFIG,
       cache: tzCache,
       refreshAll,
+      setEnabled,
+      isEnabled: () => enabled,
       rescan: () => scan(document),
       // Clear the persistent cache (e.g. after someone changes timezone).
       clearCache: () => {

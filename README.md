@@ -30,17 +30,18 @@ to ping them?".
 
 ## Requirements
 
-- A **Mac with Apple Silicon** (M1/M2/M3/M4) running the **native Slack desktop
-  app** (the browser version is not covered by this tool).
-- For the one-click app (Option A): **nothing else** — Node.js is bundled inside
-  the app. For Options B/C you need **Node.js** 18+ (`node -v`).
+- A **Mac** (works on both **Apple Silicon** *and* **Intel**) running the
+  **native Slack desktop app** (the browser version is not covered).
+- For the one-click app (Option A): **nothing else** — the right Node.js for your
+  CPU is bundled inside the app. For Options B/C you need **Node.js** 18+
+  (`node -v`).
 
 ## Install
 
 ### Option A — One-click Mac app (recommended, no Terminal, no code)
 
-Best for everyone. Node.js is bundled inside the app, so there's nothing to
-install first.
+Best for everyone. The app is **universal** (Intel + Apple Silicon) and bundles
+its own Node.js, so there's nothing to install first.
 
 1. Download **`SlackTeammateTime.dmg`** from the
    [latest release](https://github.com/Gtarafdar/slack-teammate-local-time/releases/latest).
@@ -48,11 +49,21 @@ install first.
    - First launch only: macOS Gatekeeper will say it "can't be opened because
      Apple cannot check it for malware" (the app is free and unsigned).
      **Right-click the app → Open → Open.** You only do this once.
-3. Click **OK** in the installer dialog.
+3. Click **OK** in the install dialog.
 
-That's it — Slack restarts with teammate times enabled, and it starts
-automatically at every login. **To update or remove later, just open the app
-again** and choose Update or Uninstall.
+That's it — a **clock icon appears in your menu bar**, Slack shows teammate times,
+and it starts automatically at every login.
+
+#### Turning it on/off (menu bar)
+
+Click the **clock icon in the menu bar** for a small menu:
+
+- **Show teammate times** — toggle the inline times **on or off instantly**.
+  Slack updates live (no reload, no restart) — labels appear or disappear right
+  away.
+- **Uninstall…** — completely removes the helper and its login item (Slack itself
+  is never touched).
+- **Quit** — closes the menu bar app for this session (it returns at next login).
 
 > Why the Gatekeeper prompt? Distributing a Mac app that opens with a plain
 > double-click requires a paid Apple Developer signature. This app is free and
@@ -120,13 +131,20 @@ Remove everything with `./uninstall-agent.sh` (or `Uninstall.command`).
 ## How it works
 
 ```
+menu bar app ──> writes state.json {"enabled": true|false}
 launch-slack.sh ──> Slack (Electron) with --remote-debugging-port=9229
 injector.js (node) ──CDP──> injects inject.js into Slack's page
+               └─> watches state.json ──> toggles labels live (no reload)
 inject.js ──> reads in-page Slack token ──> /api/users.info ──> teammate tz
           └─> MutationObserver adds the sender's local time next to each name
               (current time, plus their time-when-sent for older messages)
               and refreshes every minute
 ```
+
+- **Menu bar toggle.** The bundled menu bar app (universal Intel + Apple Silicon)
+  just writes an on/off flag to `state.json`. The injector watches that file and
+  calls into the page to add or remove the labels **instantly**, so toggling is
+  live — no Slack reload or restart.
 
 - **Timezones** are pulled automatically from Slack's own Web API
   (`users.info`) using the token already present in the page, then cached in
@@ -153,20 +171,24 @@ updates and needs no admin rights.
 | `com.user.slacktime.plist` | LaunchAgent template for auto-start at login. |
 | `install-agent.sh` / `uninstall-agent.sh` | Install / remove the login auto-start. |
 | `package-for-sharing.sh` | Builds a clean shareable zip in `dist/`. |
-| `build-mac-app.sh` | Builds the one-click `SlackTeammateTime.app` + `.dmg` (bundles Node). |
-| `app/` | App build inputs: `launcher.sh` (the GUI installer), `Info.plist`, `AppIcon.icns`. |
+| `build-mac-app.sh` | Builds the universal one-click `SlackTeammateTime.app` + `.dmg`. |
+| `app/SlackTeammateTime.swift` | The menu bar app (toggle, install/uninstall, login item). |
+| `app/setup.sh` | Silent, arch-aware engine deploy/uninstall used by the app. |
+| `app/Info.plist`, `app/AppIcon.icns` | App bundle metadata and icon. |
 | `verify.js` | Diagnostic: prints the labels currently rendered in Slack. |
 
 ### Building the one-click app (maintainers)
 
 ```bash
-./build-mac-app.sh        # downloads Node arm64, assembles the .app, builds the .dmg
+./build-mac-app.sh   # downloads Node (arm64 + x64), compiles a universal app, builds the .dmg
 ```
 
 Outputs `dist/SlackTeammateTime.app` and `dist/SlackTeammateTime.dmg`. The app is
-self-contained (bundled Node + dependencies), targets Apple Silicon, and is
-**unsigned** — users approve it once via right-click → Open. Publish the `.dmg`
-as a GitHub Release asset so teammates download a single file.
+self-contained (bundled Node for both CPUs + dependencies), is a **universal
+binary** (Intel + Apple Silicon), and is **ad-hoc signed but not notarized** —
+users approve it once via right-click → Open. Publish the `.dmg` as a GitHub
+Release asset so teammates download a single file. On first launch the app copies
+itself to `~/Applications`, deploys the engine, and registers a login item.
 
 ## Verifying / troubleshooting
 
@@ -225,10 +247,12 @@ found, and what was hardened.
    ```
 2. **Manual code review** of every file, focused on: the CDP debug-port attack
    surface, Slack token handling, the same-origin API call, DOM/XSS safety in
-   the injected script, and the shell scripts / LaunchAgent (command injection,
-   PATH, quoting, privileges, file permissions).
-3. **Static checks** — `bash -n` syntax validation on every script and
-   `plutil -lint` on the generated LaunchAgent plist.
+   the injected script, the shell scripts / LaunchAgents (command injection,
+   PATH, quoting, privileges, file permissions), and the menu bar app
+   (`SlackTeammateTime.swift`) + its on/off state file.
+3. **Static checks** — `bash -n` syntax validation on every script,
+   `node --check` on the JS, `plutil -lint` on the generated plists, and
+   `codesign --verify` on the built app.
 
 ### What was hardened
 
@@ -240,6 +264,13 @@ found, and what was hardened.
 - **Locked-down runtime:** the deployed copy in
   `~/Library/Application Support/SlackTeammateTime` is set to `700` (user-only),
   since `inject.js` is executed verbatim inside your Slack session.
+- **Toggle carries no code.** The menu bar on/off control only writes a plain
+  boolean to `state.json` (`{"enabled": true|false}`); the injector reads just
+  that boolean — it never evaluates anything from the file — so the toggle path
+  can't be used to inject code.
+- **Universal app, ad-hoc signed.** The shipped app is code-signed (ad-hoc) and
+  built from the source in `app/`. It is not notarized (no paid Apple account),
+  hence the one-time right-click → Open.
 
 ### Built-in protections (already in place)
 

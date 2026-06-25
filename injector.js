@@ -27,19 +27,68 @@ const PORT = parseInt(process.env.SLACK_DEBUG_PORT || '9229', 10);
 const HOST = '127.0.0.1';
 const POLL_MS = 3000;
 const INJECT_PATH = path.join(__dirname, 'inject.js');
+// On/off state written by the menu bar app: { "enabled": true|false }.
+const STATE_PATH = path.join(__dirname, 'state.json');
 
 // targetId -> { client, injecting }
 const attached = new Map();
+
+// Current on/off state (kept in sync with state.json).
+let currentEnabled = readEnabled();
 
 function log(...args) {
   const ts = new Date().toLocaleTimeString();
   console.log(`[injector ${ts}]`, ...args);
 }
 
+// Read the on/off state from state.json. Defaults to ON when the file is
+// missing or unreadable (e.g. the developer/Terminal flow without the app).
+function readEnabled() {
+  try {
+    const raw = fs.readFileSync(STATE_PATH, 'utf8');
+    const obj = JSON.parse(raw);
+    return obj.enabled !== false;
+  } catch (_) {
+    return true;
+  }
+}
+
 function readInjectSource() {
   // Re-read on every injection so edits to inject.js take effect on reload
   // without restarting the daemon.
   return fs.readFileSync(INJECT_PATH, 'utf8');
+}
+
+// Prefix the page script with the current on/off flag so a fresh document
+// renders in the right state immediately.
+function buildSource(enabled) {
+  return 'window.__SLACKTIME_ENABLED__ = ' + (enabled !== false) + ';\n' + readInjectSource();
+}
+
+// Push an on/off change to every attached Slack page, live (no reload).
+async function applyEnabledToAll(enabled) {
+  const expr =
+    'window.__SLACKTIME_ENABLED__ = ' + (enabled !== false) + ';' +
+    'window.__slackTeammateTime && window.__slackTeammateTime.setEnabled(' + (enabled !== false) + ');';
+  for (const { client } of attached.values()) {
+    if (!client) continue;
+    try {
+      await client.Runtime.evaluate({ expression: expr, returnByValue: true });
+    } catch (_) {
+      /* page tearing down; ignore */
+    }
+  }
+}
+
+// Watch state.json for menu bar toggles and apply them live.
+function watchEnabled() {
+  fs.watchFile(STATE_PATH, { interval: 1000 }, () => {
+    const next = readEnabled();
+    if (next === currentEnabled) return;
+    currentEnabled = next;
+    log('Toggle ->', next ? 'ON' : 'OFF');
+    applyEnabledToAll(next).catch(() => {});
+  });
 }
 
 function isSlackClientTarget(t) {
@@ -55,14 +104,13 @@ async function injectInto(client) {
   await Page.enable();
   await Runtime.enable();
 
-  const source = readInjectSource();
-
-  // Persist across future reloads / navigations.
-  await Page.addScriptToEvaluateOnNewDocument({ source });
+  // Persist across future reloads / navigations (uses the state at attach time;
+  // loadEventFired below re-applies the current state on every reload).
+  await Page.addScriptToEvaluateOnNewDocument({ source: buildSource(currentEnabled) });
 
   // Run once in the document that is already loaded.
   const result = await Runtime.evaluate({
-    expression: source,
+    expression: buildSource(currentEnabled),
     awaitPromise: false,
     returnByValue: true,
   });
@@ -74,7 +122,7 @@ async function injectInto(client) {
   // (addScriptToEvaluateOnNewDocument should already cover this).
   Page.loadEventFired(async () => {
     try {
-      await Runtime.evaluate({ expression: readInjectSource(), returnByValue: true });
+      await Runtime.evaluate({ expression: buildSource(currentEnabled), returnByValue: true });
       log('Re-injected after page load.');
     } catch (err) {
       // Page/connection may be tearing down; ignore.
@@ -137,6 +185,10 @@ async function main() {
 
   log(`Watching for Slack client targets on ${HOST}:${PORT} ...`);
   log('If nothing attaches, run ./launch-slack.sh first.');
+  log('Initial state:', currentEnabled ? 'ON' : 'OFF');
+
+  // React to menu bar on/off toggles.
+  watchEnabled();
 
   // Initial pass + steady polling.
   await tick();

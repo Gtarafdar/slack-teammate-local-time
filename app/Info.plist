@@ -8,9 +8,11 @@
     <key>CFBundleIdentifier</key>
     <string>com.user.slackteammatetime</string>
     <key>CFBundleVersion</key>
-    <string>1.0.0</string>
+    <string>1.1.0</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.0.0</string>
+    <string>1.1.0</string>
+    <key>LSUIElement</key>
+    <true/>
     <key>CFBundleExecutable</key>
     <string>SlackTeammateTime</string>
     <key>CFBundleIconFile</key>
