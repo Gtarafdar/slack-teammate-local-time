@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Build/share artifacts
+dist/
+
+# Logs
+*.log
+agent.out.log
+agent.err.log
+
+# macOS
+.DS_Store
+
+# Local screenshots / scratch
+preview.png

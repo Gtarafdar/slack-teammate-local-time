@@ -1,0 +1,21 @@
+{
+  "name": "slack-inline-teammate-time",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Show each teammate's current local time inline next to their name in the native macOS Slack desktop app, via Chrome DevTools Protocol injection (no admin / no Slack app install).",
+  "type": "commonjs",
+  "bin": {
+    "slack-time": "injector.js"
+  },
+  "scripts": {
+    "launch": "./launch-slack.sh",
+    "start": "node injector.js",
+    "go": "./launch-slack.sh && node injector.js"
+  },
+  "dependencies": {
+    "chrome-remote-interface": "^0.33.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
