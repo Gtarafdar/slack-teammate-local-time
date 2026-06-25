@@ -8,6 +8,13 @@ Alex Rivera     9:02 PM   / 6:18 PM local time
 Priya Sharma    8:15 AM   / 11:45 AM local time (now 9:48 PM)
 ```
 
+![Slack Teammate Time showing each sender's local time inline; bots are skipped](docs/demo.png)
+
+*Illustrative mockup with fictional names and messages — not a real conversation.
+Your own Slack timestamp stays in your time; the added label shows the sender's
+local time when they sent it and, for older messages, their current local time.
+Bots and apps are skipped.*
+
 Slack only shows a person's local time on their profile. This puts it inline in
 the conversation so you never have to open a profile to know "is it a good time
 to ping them?".
