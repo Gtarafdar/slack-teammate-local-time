@@ -14,15 +14,25 @@ cd "$DIR"
 
 PORT="${SLACK_DEBUG_PORT:-9229}"
 
-# Make sure node is findable when launched from launchd (minimal PATH).
-export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
-if [ -s "$HOME/.nvm/nvm.sh" ] && ! command -v node >/dev/null 2>&1; then
-  # shellcheck disable=SC1090
-  . "$HOME/.nvm/nvm.sh" >/dev/null 2>&1 || true
+# Resolve a Node binary. Prefer one bundled next to this script (the macOS .app
+# deploys its own node here), so no system Node install is required. Otherwise
+# fall back to a system Node on PATH (developer/Terminal install).
+NODE_BIN=""
+if [ -x "$DIR/node" ]; then
+  NODE_BIN="$DIR/node"
+else
+  export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+  if [ -s "$HOME/.nvm/nvm.sh" ] && ! command -v node >/dev/null 2>&1; then
+    # shellcheck disable=SC1090
+    . "$HOME/.nvm/nvm.sh" >/dev/null 2>&1 || true
+  fi
+  if command -v node >/dev/null 2>&1; then
+    NODE_BIN="$(command -v node)"
+  fi
 fi
 
-if ! command -v node >/dev/null 2>&1; then
-  echo "[run] ERROR: node not found on PATH." >&2
+if [ -z "$NODE_BIN" ]; then
+  echo "[run] ERROR: node not found (no bundled node and none on PATH)." >&2
   exit 1
 fi
 
@@ -34,5 +44,5 @@ else
   echo "[run] Debug port ${PORT} already reachable; leaving Slack as-is."
 fi
 
-echo "[run] Starting injector..."
-exec node "$DIR/injector.js"
+echo "[run] Starting injector ($NODE_BIN)..."
+exec "$NODE_BIN" "$DIR/injector.js"

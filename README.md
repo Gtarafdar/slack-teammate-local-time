@@ -30,32 +30,46 @@ to ping them?".
 
 ## Requirements
 
-- A **Mac** running the **native Slack desktop app** (the browser version is not
-  covered by this tool).
-- **Node.js** 18+ (`node -v`). The double-click installer can install it for you
-  via Homebrew if it's missing.
+- A **Mac with Apple Silicon** (M1/M2/M3/M4) running the **native Slack desktop
+  app** (the browser version is not covered by this tool).
+- For the one-click app (Option A): **nothing else** — Node.js is bundled inside
+  the app. For Options B/C you need **Node.js** 18+ (`node -v`).
 
 ## Install
 
-### Option A — Easy (double-click installer)
+### Option A — One-click Mac app (recommended, no Terminal, no code)
 
-Best for non-technical users.
+Best for everyone. Node.js is bundled inside the app, so there's nothing to
+install first.
 
-1. Download this project:
-   - Either download the ZIP from GitHub
-     (**Code -> Download ZIP**) and unzip it, or `git clone` (Option B).
+1. Download **`SlackTeammateTime.dmg`** from the
+   [latest release](https://github.com/Gtarafdar/slack-teammate-local-time/releases/latest).
+2. Open the `.dmg` and **double-click the `SlackTeammateTime` app**.
+   - First launch only: macOS Gatekeeper will say it "can't be opened because
+     Apple cannot check it for malware" (the app is free and unsigned).
+     **Right-click the app → Open → Open.** You only do this once.
+3. Click **OK** in the installer dialog.
+
+That's it — Slack restarts with teammate times enabled, and it starts
+automatically at every login. **To update or remove later, just open the app
+again** and choose Update or Uninstall.
+
+> Why the Gatekeeper prompt? Distributing a Mac app that opens with a plain
+> double-click requires a paid Apple Developer signature. This app is free and
+> unsigned, so macOS asks you to confirm the first time via right-click → Open.
+
+### Option B — Double-click installer from source (needs Node.js)
+
+1. Download the project ZIP from GitHub (**Code -> Download ZIP**) and unzip it,
+   or `git clone` (Option C).
 2. Double-click **`Install.command`**.
    - First launch, macOS Gatekeeper may block it. **Right-click -> Open**, then
      confirm. (Or run once: `xattr -dr com.apple.quarantine <the-folder>`.)
-3. The installer:
-   - checks for Node.js (offers to install it via Homebrew if missing),
-   - installs the one dependency,
-   - sets up login auto-start.
+3. The installer checks for Node.js (offers to install it via Homebrew if
+   missing), installs the one dependency, and sets up login auto-start. To
+   remove: double-click **`Uninstall.command`**.
 
-That's it — Slack relaunches with teammate times enabled, and it starts
-automatically at every login. To remove: double-click **`Uninstall.command`**.
-
-### Option B — Developer (Terminal)
+### Option C — Developer (Terminal)
 
 ```bash
 git clone https://github.com/Gtarafdar/slack-teammate-local-time.git
@@ -139,7 +153,20 @@ updates and needs no admin rights.
 | `com.user.slacktime.plist` | LaunchAgent template for auto-start at login. |
 | `install-agent.sh` / `uninstall-agent.sh` | Install / remove the login auto-start. |
 | `package-for-sharing.sh` | Builds a clean shareable zip in `dist/`. |
+| `build-mac-app.sh` | Builds the one-click `SlackTeammateTime.app` + `.dmg` (bundles Node). |
+| `app/` | App build inputs: `launcher.sh` (the GUI installer), `Info.plist`, `AppIcon.icns`. |
 | `verify.js` | Diagnostic: prints the labels currently rendered in Slack. |
+
+### Building the one-click app (maintainers)
+
+```bash
+./build-mac-app.sh        # downloads Node arm64, assembles the .app, builds the .dmg
+```
+
+Outputs `dist/SlackTeammateTime.app` and `dist/SlackTeammateTime.dmg`. The app is
+self-contained (bundled Node + dependencies), targets Apple Silicon, and is
+**unsigned** — users approve it once via right-click → Open. Publish the `.dmg`
+as a GitHub Release asset so teammates download a single file.
 
 ## Verifying / troubleshooting
 
