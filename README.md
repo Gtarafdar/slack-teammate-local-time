@@ -123,7 +123,7 @@ whoever wants it.
 
 ## About the maker
 
-<img src="docs/assets/icon.png" width="84" align="right" alt="" />
+<img src="docs/assets/gobinda.png" width="120" align="right" alt="Gobinda Tarafdar" />
 
 **Gobinda Tarafdar** — WordPress product marketer by trade, stubborn
 problem‑solver by habit, lifelong Harry Potter devotee by heart.
