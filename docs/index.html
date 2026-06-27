@@ -12,35 +12,41 @@
 <meta property="og:url" content="https://gtarafdar.github.io/slack-teammate-local-time/" />
 <meta name="twitter:card" content="summary_large_image" />
 <style>
+  /* Hallmark · macrostructure: Marquee Hero (preserved) · theme: Daybreak (warm-paper light)
+   * tone: modern-minimal + editorial · paper #FBFAF6 · ink #24222E · accent terracotta #C2452A
+   * pre-emit critique: P4 H5 E4 S4 R5 V4 */
   :root{
-    --bg:#120f24; --bg2:#15122c; --panel:#1c1838; --panel2:#221d44;
-    --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.14);
-    --ink:#ece9ff; --muted:#a59fce; --muted2:#8b85b6;
-    --accent:#8b7cf0; --accent2:#b6a8f2; --accent3:#6c5cd6;
+    --bg:#FBFAF6; --bg2:#F4EFE8; --panel:#FFFFFF; --panel2:#FAF6F0;
+    --line:rgba(36,34,46,.12); --line2:rgba(36,34,46,.20);
+    --ink:#24222E; --muted:#5C5968; --muted2:#7A7785;
+    --accent:#C2452A; --accent2:#A93C24; --accent3:#C2452A;
+    --accent-soft:#F8E7DF;
     --radius:18px; --maxw:1080px;
     --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   }
   *{box-sizing:border-box}
+  html,body{overflow-x:clip;max-width:100%}
   html{scroll-behavior:smooth}
   body{
     margin:0;font-family:var(--font);color:var(--ink);line-height:1.6;
     background:
-      radial-gradient(900px 600px at 80% -10%, rgba(139,124,240,.22), transparent 60%),
-      radial-gradient(700px 500px at -10% 10%, rgba(108,92,214,.18), transparent 55%),
+      radial-gradient(820px 520px at 86% -8%, rgba(194,69,42,.07), transparent 60%),
+      radial-gradient(680px 460px at -6% 4%, rgba(36,34,46,.04), transparent 55%),
       var(--bg);
     -webkit-font-smoothing:antialiased;
   }
   a{color:inherit;text-decoration:none}
+  a:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:8px}
   .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
   .muted{color:var(--muted)}
   .eyebrow{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.12em;
     text-transform:uppercase;color:var(--accent2);
-    background:rgba(139,124,240,.12);border:1px solid var(--line2);
+    background:var(--accent-soft);border:1px solid rgba(194,69,42,.20);
     padding:6px 12px;border-radius:999px}
 
   /* Nav */
   nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);
-    background:rgba(18,15,36,.72);border-bottom:1px solid var(--line)}
+    background:rgba(251,250,246,.82);border-bottom:1px solid var(--line)}
   .nav-in{display:flex;align-items:center;gap:18px;height:64px}
   .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.01em}
   .brand img{width:30px;height:30px;border-radius:8px}
@@ -51,40 +57,35 @@
     padding:11px 18px;border-radius:12px;border:1px solid transparent;cursor:pointer;
     transition:transform .15s ease, box-shadow .15s ease, background .15s ease}
   .btn:hover{transform:translateY(-1px)}
-  .btn-primary{background:linear-gradient(135deg,#7b6cf2,#5a48d6);color:#fff;
-    box-shadow:0 10px 26px rgba(90,72,214,.45)}
-  .btn-primary:hover{box-shadow:0 14px 34px rgba(90,72,214,.6)}
-  .btn-ghost{border-color:var(--line2);color:var(--ink);background:rgba(255,255,255,.04)}
-  .btn-ghost:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.22)}
+  .btn-primary{background:var(--accent);color:#fff;
+    box-shadow:0 8px 20px rgba(194,69,42,.26)}
+  .btn-primary:hover{background:var(--accent2);box-shadow:0 12px 28px rgba(194,69,42,.34)}
+  .btn-ghost{border-color:var(--line2);color:var(--ink);background:#fff}
+  .btn-ghost:hover{background:var(--bg2);border-color:var(--ink)}
   .btn svg{flex:0 0 auto}
-  .nav .btn{padding:9px 15px;font-size:14px}
+  nav .btn{padding:9px 15px;font-size:14px}
+  .nav-links a.btn-primary,.nav-links a.btn-primary:hover{color:#fff}
   @media(max-width:760px){.nav-links a:not(.btn){display:none}}
 
   /* Hero */
   .hero{padding:84px 0 40px;text-align:center}
   .hero img.appicon{display:block;width:96px;height:96px;border-radius:22px;
-    box-shadow:0 20px 50px rgba(0,0,0,.45);margin:0 auto 22px}
-  .hero h1{font-size:clamp(34px,6vw,60px);line-height:1.05;margin:.2em 0 .25em;
-    letter-spacing:-.02em;font-weight:850;
-    background:linear-gradient(180deg,#fff,#c9c2ff);-webkit-background-clip:text;
-    background-clip:text;color:transparent}
+    box-shadow:0 16px 40px rgba(36,34,46,.18);margin:0 auto 22px}
+  .hero h1{font-size:clamp(30px,6vw,60px);line-height:1.06;margin:.2em 0 .25em;
+    letter-spacing:-.02em;font-weight:850;color:var(--ink);
+    overflow-wrap:anywhere;min-width:0}
+  .hero h1 .hl{color:var(--accent)}
   .hero p.lead{font-size:clamp(17px,2.4vw,21px);color:var(--muted);max-width:680px;margin:0 auto 26px}
   .cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
   .chips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:26px}
   .chip{font-size:13px;color:var(--muted);border:1px solid var(--line);
-    background:rgba(255,255,255,.03);padding:7px 13px;border-radius:999px}
+    background:#fff;padding:7px 13px;border-radius:999px}
   .chip b{color:var(--accent2)}
 
-  /* Window frame for screenshots */
+  /* Screenshot figure (no fake browser chrome) */
   .frame{margin:42px auto 0;max-width:980px;border:1px solid var(--line2);
     border-radius:16px;overflow:hidden;background:var(--panel);
-    box-shadow:0 30px 80px rgba(0,0,0,.5)}
-  .frame .bar{display:flex;gap:7px;padding:12px 14px;background:rgba(255,255,255,.04);
-    border-bottom:1px solid var(--line)}
-  .frame .bar i{width:11px;height:11px;border-radius:50%;display:inline-block}
-  .frame .bar i:nth-child(1){background:#ff5f57}
-  .frame .bar i:nth-child(2){background:#febc2e}
-  .frame .bar i:nth-child(3){background:#28c840}
+    box-shadow:0 24px 60px rgba(36,34,46,.14)}
   .frame img{display:block;width:100%}
 
   /* Sections */
@@ -97,8 +98,9 @@
   .g3{grid-template-columns:repeat(3,1fr)}
   .g2{grid-template-columns:repeat(2,1fr)}
   @media(max-width:860px){.g3,.g2{grid-template-columns:1fr}}
-  .card{background:linear-gradient(180deg,var(--panel),var(--bg2));
-    border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+  .card{background:var(--panel);
+    border:1px solid var(--line);border-radius:var(--radius);padding:22px;
+    box-shadow:0 1px 2px rgba(36,34,46,.04)}
   .card h3{margin:6px 0 8px;font-size:18px}
   .card p{margin:0;color:var(--muted);font-size:15px}
   .tag{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent2)}
@@ -122,8 +124,8 @@
   ol.steps li:last-child{border-bottom:0}
   ol.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:11px;
     width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-weight:800;
-    color:#fff;background:linear-gradient(135deg,#7b6cf2,#5a48d6)}
-  .note{background:rgba(139,124,240,.10);border:1px solid var(--line2);
+    color:#fff;background:var(--accent)}
+  .note{background:var(--accent-soft);border:1px solid rgba(194,69,42,.20);
     border-radius:14px;padding:16px 18px;color:var(--muted);font-size:14px;margin-top:18px}
   code,kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
   .reqs{width:100%;border-collapse:collapse}
@@ -137,8 +139,8 @@
   .lx{vertical-align:-2px;opacity:.6;margin-left:4px}
   .links{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
   @media(max-width:680px){.links{grid-template-columns:1fr 1fr}}
-  .links a{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(255,255,255,.02)}
-  .links a:hover{border-color:var(--line2);background:rgba(255,255,255,.05)}
+  .links a{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--panel)}
+  .links a:hover{border-color:var(--accent);background:var(--accent-soft)}
   .links b{display:block}
   .links span{color:var(--muted2);font-size:13px}
 
@@ -153,6 +155,7 @@
   footer{border-top:1px solid var(--line);padding:40px 0;color:var(--muted2);font-size:14px}
   .foot-links{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:16px}
   .foot-links a{color:var(--muted);font-weight:600}
+  .foot-links a:hover{color:var(--accent)}
 
   .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
   .reveal.is-in{opacity:1;transform:none}
@@ -195,7 +198,7 @@
   <div class="wrap">
     <img class="appicon" src="assets/icon.png" alt="Slack Teammate Time icon" />
     <div class="eyebrow">macOS menu-bar app · fully local</div>
-    <h1>Know your teammate's<br />local time, right in Slack.</h1>
+    <h1>Know your teammate's<br /><span class="hl">local time</span>, right in Slack.</h1>
     <p class="lead">Each person's local time appears next to their name — so you instantly know whether it's a good time to ping them. No login, no admin, no Marketplace app. Slack itself is never touched.</p>
     <div class="cta">
       <a class="btn btn-primary" href="https://github.com/Gtarafdar/slack-teammate-local-time/releases/latest"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>Download for macOS · .dmg</a>
@@ -208,10 +211,9 @@
       <span class="chip">~15 MB RAM · always-on</span>
     </div>
 
-    <div class="frame reveal">
-      <div class="bar"><i></i><i></i><i></i></div>
+    <figure class="frame reveal">
       <img src="demo.png" alt="Teammate local times shown inline in Slack" />
-    </div>
+    </figure>
     <p class="muted" style="font-size:13px;margin-top:12px">Illustrative mockup with fictional names — not a real conversation.</p>
   </div>
 </header>
