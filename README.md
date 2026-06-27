@@ -1,222 +1,307 @@
-# Slack inline teammate local time (native macOS desktop)
+<div align="center">
 
-Show each teammate's **current local time** right next to their name in the
-native macOS Slack desktop app, e.g.:
+<img src="docs/assets/icon.png" width="120" alt="Slack Teammate Time icon" />
 
-```
-Alex Rivera     9:02 PM   / 6:18 PM local time
-Priya Sharma    8:15 AM   / 11:45 AM local time (now 9:48 PM)
-```
+# Slack Teammate Time
+
+**See every teammate's local time right next to their name in Slack.**
+A tiny, fully‑local macOS menu‑bar app. No login, no admin, no Marketplace app.
+
+[![Latest release](https://img.shields.io/github/v/release/Gtarafdar/slack-teammate-local-time)](https://github.com/Gtarafdar/slack-teammate-local-time/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/Gtarafdar/slack-teammate-local-time/total)](https://github.com/Gtarafdar/slack-teammate-local-time/releases)
+![Platform](https://img.shields.io/badge/macOS-11%2B-blue)
+![Universal](https://img.shields.io/badge/build-Universal%20(Apple%20Silicon%20%2B%20Intel)-success)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/Gtarafdar/slack-teammate-local-time?style=social)](https://github.com/Gtarafdar/slack-teammate-local-time/stargazers)
+
+**[⬇ Download the latest release](https://github.com/Gtarafdar/slack-teammate-local-time/releases/latest)** ·
+**[🌐 Landing page](https://gtarafdar.github.io/slack-teammate-local-time/)** ·
+**[⭐ Star](https://github.com/Gtarafdar/slack-teammate-local-time)**
+
+`macOS 11+` · `Apple Silicon + Intel (universal)` · `Free & open source (MIT)` · `Runs fully on your Mac`
+
+</div>
+
+---
 
 ![Slack Teammate Time showing each sender's local time inline; bots are skipped](docs/demo.png)
 
-*Illustrative mockup with fictional names and messages — not a real conversation.
-Your own Slack timestamp stays in your time; the added label shows the sender's
-local time when they sent it and, for older messages, their current local time.
-Bots and apps are skipped.*
+<div align="center"><em>Illustrative mockup with fictional names — not a real conversation.</em></div>
 
-Slack only shows a person's local time on their profile. This puts it inline in
-the conversation so you never have to open a profile to know "is it a good time
-to ping them?".
+## What it does
 
-- **Recent message:** shows the sender's **current** local time
-  (e.g. `6:18 PM local time`).
-- **Older message:** also shows the sender's local time **when they sent it**,
-  plus their current time
-  (e.g. `11:45 AM local time (now 9:48 PM)`). Slack's own timestamp is still
-  your time, so you get all three at a glance: your time / their time when sent /
-  their time now.
+Slack already knows everyone's local time — but it's tucked behind a profile
+hover, and it slips your mind exactly when you need it. **Slack Teammate Time**
+puts it right in the conversation: next to each person's name you see **their
+local time**, computed live, so you instantly know *"is it a good time to ping
+them?"* without opening a single profile.
 
-- **No admin approval** and **no Slack Marketplace app** required.
-- **Slack itself is never modified** (survives Slack auto-updates).
-- Works on any workspace; nothing to configure per teammate.
+- **Recent message** → the sender's **current** local time (e.g. `6:18 PM local time`).
+- **Older message** → also their local time **when they sent it**, plus their
+  current time (e.g. `11:45 AM local time (now 9:48 PM)`). Slack's own timestamp
+  stays in *your* time, so you get all three at a glance.
+- **Bots and apps** are skipped automatically — no clutter.
 
-> Note: this is an unofficial, local enhancement. It reads timezone info that
-> Slack already exposes on profiles. Modifying client behavior is technically
-> outside Slack's ToS — use at your own discretion.
+It reads the timezone Slack already exposes on profiles, using the Slack session
+already on your Mac — so there's **nothing to log into and no workspace admin to
+ask**. Slack itself is never modified.
 
-## Requirements
+## See it
 
-- A **Mac** (works on both **Apple Silicon** *and* **Intel**) running the
-  **native Slack desktop app** (the browser version is not covered).
-- For the one-click app (Option A): **nothing else** — the right Node.js for your
-  CPU is bundled inside the app. For Options B/C you need **Node.js** 18+
-  (`node -v`).
+| The menu bar toggle | Inline in Slack |
+| --- | --- |
+| ![Menu bar dropdown](docs/assets/menu.png) | ![Inline times](docs/demo.png) |
 
-## Install
+## Features
 
-### Option A — One-click Mac app (recommended, no Terminal, no code)
-
-Best for everyone. The app is **universal** (Intel + Apple Silicon) and bundles
-its own Node.js, so there's nothing to install first.
-
-1. Download **`SlackTeammateTime.dmg`** from the
-   [latest release](https://github.com/Gtarafdar/slack-teammate-local-time/releases/latest).
-2. Open the `.dmg` and **double-click the `SlackTeammateTime` app**.
-   - First launch only: macOS Gatekeeper will say it "can't be opened because
-     Apple cannot check it for malware" (the app is free and unsigned).
-     **Right-click the app → Open → Open.** You only do this once.
-3. Click **OK** in the install dialog.
-
-That's it — a **clock icon appears in your menu bar**, Slack shows teammate times,
-and it starts automatically at every login.
-
-#### Turning it on/off (menu bar)
-
-Click the **clock icon in the menu bar** for a small menu:
-
-- **Show teammate times** — toggle the inline times **on or off instantly**.
-  Slack updates live (no reload, no restart) — labels appear or disappear right
-  away.
-- **Uninstall…** — completely removes the helper and its login item (Slack itself
-  is never touched).
-- **Quit** — closes the menu bar app for this session (it returns at next login).
-
-> Why the Gatekeeper prompt? Distributing a Mac app that opens with a plain
-> double-click requires a paid Apple Developer signature. This app is free and
-> unsigned, so macOS asks you to confirm the first time via right-click → Open.
-
-### Option B — Double-click installer from source (needs Node.js)
-
-1. Download the project ZIP from GitHub (**Code -> Download ZIP**) and unzip it,
-   or `git clone` (Option C).
-2. Double-click **`Install.command`**.
-   - First launch, macOS Gatekeeper may block it. **Right-click -> Open**, then
-     confirm. (Or run once: `xattr -dr com.apple.quarantine <the-folder>`.)
-3. The installer checks for Node.js (offers to install it via Homebrew if
-   missing), installs the one dependency, and sets up login auto-start. To
-   remove: double-click **`Uninstall.command`**.
-
-### Option C — Developer (Terminal)
-
-```bash
-git clone https://github.com/Gtarafdar/slack-teammate-local-time.git
-cd slack-teammate-local-time
-npm install
-./install-agent.sh        # set up login auto-start (recommended)
-```
-
-Or run it once without auto-start:
-
-```bash
-npm run go                # = ./launch-slack.sh && node injector.js
-```
-
-Return to Slack — within a few seconds teammates' local times appear next to
-their names. Leave `node injector.js` running (it re-injects after reloads).
-
-## How to use it (after install)
-
-There's nothing to do day-to-day:
-
-- It starts automatically at login.
-- It launches Slack with the required debug port if needed.
-- Times refresh every minute and resolve new teammates automatically.
-
-If you ever open Slack manually and don't see times, run `./launch-slack.sh`
-(Slack needs to be started with the debug port).
-
-## What gets installed (auto-start)
-
-`./install-agent.sh` (and `Install.command`) install a **per-user** LaunchAgent
-at `~/Library/LaunchAgents/com.user.slacktime.plist` that starts at login,
-launches Slack with the debug port if needed, and keeps the injector running.
-
-Because macOS privacy protection (TCC) blocks login agents from running code in
-`~/Downloads`, `~/Desktop` and `~/Documents`, the installer deploys a **copy** of
-the runtime to a non-protected location and points the agent there:
-
-```
-~/Library/Application Support/SlackTeammateTime
-```
-
-Logs live there too: `agent.out.log` and `agent.err.log`. If you edit
-`inject.js` in your project folder, re-run `./install-agent.sh` to redeploy.
-
-Remove everything with `./uninstall-agent.sh` (or `Uninstall.command`).
+- **Inline local times** — each teammate's current local time next to their name,
+  refreshed every minute.
+- **Sent‑time + now** — older messages also show the sender's local time *when
+  they sent it*, so timestamps make sense across timezones.
+- **One‑click on/off** — a clock icon in your menu bar toggles the times **on or
+  off instantly**. Slack updates live — no reload, no restart.
+- **Bots & apps skipped** — automatically, so the message list stays clean.
+- **No admin, no login, no Marketplace app** — it reuses the Slack desktop
+  session already on your Mac. Works on personal and company workspaces alike.
+- **Featherweight** — the background helper idles at ~15 MB RAM and is
+  event‑light; the menu bar app is a tiny native binary.
+- **Set & forget** — one‑time install, starts at login, runs continuously and
+  restarts itself if needed. No daily relaunch, no Mac restart.
+- **Universal & tidy** — one app for Apple Silicon and Intel, menu‑bar only (no
+  Dock icon). Slack's look and feel is untouched.
+- **Plug & play** — download a `.dmg`, double‑click the app, done. No code, no
+  Terminal, no Node.js to install (it's bundled).
 
 ## How it works
 
 ```
 menu bar app ──> writes state.json {"enabled": true|false}
-launch-slack.sh ──> Slack (Electron) with --remote-debugging-port=9229
+launch-slack.sh ──> Slack (Electron) with --remote-debugging-port=9229 (localhost only)
 injector.js (node) ──CDP──> injects inject.js into Slack's page
                └─> watches state.json ──> toggles labels live (no reload)
-inject.js ──> reads in-page Slack token ──> /api/users.info ──> teammate tz
+inject.js ──> reads in-page Slack token ──> /api/users.info ──> teammate timezone
           └─> MutationObserver adds the sender's local time next to each name
               (current time, plus their time-when-sent for older messages)
               and refreshes every minute
 ```
 
-- **Menu bar toggle.** The bundled menu bar app (universal Intel + Apple Silicon)
-  just writes an on/off flag to `state.json`. The injector watches that file and
-  calls into the page to add or remove the labels **instantly**, so toggling is
-  live — no Slack reload or restart.
+1. **Install & it self‑connects.** The bundled background helper attaches to the
+   Slack desktop app locally over the Chrome DevTools Protocol (CDP) — bound to
+   `127.0.0.1` only — and injects a small script into the page.
+2. **It reads timezones from Slack itself.** Using the token already present in
+   the page, it calls Slack's own same‑origin `users.info` API and caches each
+   teammate's IANA timezone in `localStorage` for 12 hours.
+3. **It renders inline, live.** A `MutationObserver` adds each sender's local
+   time next to their name and refreshes every minute. The menu bar toggle just
+   flips a boolean the helper watches — labels appear/disappear instantly.
 
-- **Timezones** are pulled automatically from Slack's own Web API
-  (`users.info`) using the token already present in the page, then cached in
-  `localStorage` for 12 hours. Nothing to configure per person.
-- **Your own messages** are not labeled (your local time = your system time).
-- **Bots/apps** are skipped automatically.
-
-### Why CDP injection (not patching `app.asar`)
+### Why CDP injection (not patching Slack's `app.asar`)
 
 The common "patch Slack's `app.asar`" trick breaks on the Mac App Store build
-(sandboxed, code-signed) and is wiped on every update. Attaching over the Chrome
-DevTools Protocol touches nothing inside the app, so it keeps working across
-updates and needs no admin rights.
+(sandboxed, code‑signed) and is wiped on every Slack update. Attaching over CDP
+touches **nothing** inside the app, so it keeps working across updates and needs
+no admin rights.
 
-## Files
+## Why I built this
 
-| File | Purpose |
+Slack already knows everyone's local time — but it's hidden behind a profile
+hover, and honestly it slips out of mind every single time. I'd do the mental
+math wrong, or ping a teammate right in the middle of their evening.
+
+I wanted that time **right there in the conversation**. But I didn't want to
+bother a workspace admin to find or approve some app, and I didn't want to push
+everyone onto a Marketplace app most of them would never need. So I built a tiny
+thing for myself that just *shows* it — inline, quietly, **without breaking
+Slack's aesthetic**.
+
+It's especially handy for **remote teams** spread across timezones, where knowing
+the exact local time is the difference between a welcome ping and a 2 AM buzz. It
+runs **entirely on your own Mac**, needs **no admin and no login**, and it's
+**free**. Because it's local‑only, there's no hassle and nothing to break on
+anyone else's setup. If you've ever felt the same, it's yours too — share it with
+whoever wants it.
+
+## About the maker
+
+<img src="docs/assets/icon.png" width="84" align="right" alt="" />
+
+**Gobinda Tarafdar** — WordPress product marketer by trade, stubborn
+problem‑solver by habit, lifelong Harry Potter devotee by heart.
+
+By day I'm the Product Marketing Specialist at **WPBakery** — the page builder
+that quietly powers a sizeable corner of the WordPress universe. Before that, I
+helped a single plugin cross **400,000+ active users** through positioning, user
+research, and a relentless focus on what actually moves the needle. When the
+day‑job owl flies home, I tinker on my own little workshop of spells — Slack
+Teammate Time is one of them.
+
+**Also from the workshop:**
+
+- **WPBakery** — the page builder I do product marketing for.
+- **Docscriber** — documentation, conjured.
+- **TheRecaller** — a memory charm for what you forget online.
+- **TheEditra** — a video‑editing cauldron of my own brewing.
+- **The Quill Press** — tech news styled after the Daily Prophet.
+- **Costlas** — cost‑of‑living for 140 countries & 1,377 cities.
+
+## Support this project
+
+If it saves you a hover, here's how to help — all optional, all appreciated:
+
+- ⭐ **[Star it on GitHub](https://github.com/Gtarafdar/slack-teammate-local-time)** — helps others find it.
+- 🐦 **[Follow on X / Twitter](https://x.com/Gtarafdarr)**
+- ❤️ **Donate** — keeps the workshop lit. <!-- TODO: add your donation link (Buy Me a Coffee / Ko-fi / GitHub Sponsors) -->
+- 💼 **Connect on LinkedIn** <!-- TODO: add your LinkedIn URL -->
+
+## Requirements
+
+| | |
 | --- | --- |
-| `Install.command` / `Uninstall.command` | Double-click install / uninstall. |
-| `launch-slack.sh` | Relaunches Slack with the debug + allow-origins flags. |
-| `injector.js` | Node daemon: attaches to Slack via CDP and injects the script; re-injects on reload. |
-| `inject.js` | The in-page script (timezone lookup + inline labels + minute refresh). |
-| `run.sh` | Ensures Slack is up with the port, then runs the injector (used by the LaunchAgent). |
-| `com.user.slacktime.plist` | LaunchAgent template for auto-start at login. |
-| `install-agent.sh` / `uninstall-agent.sh` | Install / remove the login auto-start. |
-| `package-for-sharing.sh` | Builds a clean shareable zip in `dist/`. |
-| `build-mac-app.sh` | Builds the universal one-click `SlackTeammateTime.app` + `.dmg`. |
-| `app/SlackTeammateTime.swift` | The menu bar app (toggle, install/uninstall, login item). |
-| `app/setup.sh` | Silent, arch-aware engine deploy/uninstall used by the app. |
-| `app/Info.plist`, `app/AppIcon.icns` | App bundle metadata and icon. |
-| `verify.js` | Diagnostic: prints the labels currently rendered in Slack. |
+| **macOS** | 11.0 Big Sur or later |
+| **Chip** | Apple Silicon or Intel (universal binary) |
+| **Slack** | The native **Slack desktop app**, signed in (the browser version isn't covered) |
+| **Download** | one `.dmg` · no Node.js or other prerequisites (bundled) |
+| **Price** | Free & open source (MIT) |
 
-### Building the one-click app (maintainers)
+## Install
+
+1. **Download** [`SlackTeammateTime.dmg`](https://github.com/Gtarafdar/slack-teammate-local-time/releases/latest) from the latest release.
+2. Open the `.dmg` and **double‑click the `SlackTeammateTime` app**.
+3. **First launch only:** macOS will say it "can't be opened because Apple cannot
+   check it for malware" — because the app is free and **unsigned** (see below).
+   **Right‑click the app → Open → Open.** You only do this once.
+4. Click **OK** in the install dialog.
+
+That's it — a **clock icon appears in your menu bar**, Slack shows teammate times,
+and it starts automatically at every login.
+
+> **Why the Gatekeeper prompt?** Opening a Mac app with a plain double‑click
+> requires a paid Apple Developer signature ($99/yr). This app is free and
+> **unsigned**, so macOS asks you to confirm once via right‑click → Open. After
+> that first time it opens normally. Nothing about the app changes either way.
+
+### Turning it on/off (menu bar)
+
+Click the **clock icon in the menu bar**:
+
+- **Show teammate times** — toggle the inline times **on/off instantly** (live, no
+  reload).
+- **Uninstall…** — completely removes the helper and its login item. Slack itself
+  is never touched.
+- **Quit** — closes the menu bar app for this session (it returns at next login).
+
+## Security & privacy
+
+Your Slack session is sensitive, so this is built to stay **local and safe**. It
+was put through an automated security review with **no critical, high, or medium
+findings**, plus defensive hardening.
+
+- **Nothing leaves your Mac.** The injected script talks only to Slack's
+  **same‑origin** API (the same thing the official client does) to read
+  timezones. No analytics, no telemetry, no third‑party servers.
+- **Your token never leaves Slack's origin.** It's read from the page and only
+  POSTed to same‑origin `/api/users.info` — never logged, never written to disk,
+  never sent anywhere else.
+- **No XSS.** All injected text uses `textContent` (never `innerHTML`), so
+  API/profile data can't execute as markup.
+- **Debug port is localhost‑only.** Chromium binds `--remote-debugging-port` to
+  `127.0.0.1` and we set `--remote-allow-origins` to a single specific origin
+  (not `*`), which blocks remote sites and DNS‑rebinding.
+- **The toggle carries no code.** The menu only writes a boolean to `state.json`;
+  the helper reads just that boolean — it never evaluates the file's contents.
+- **Locked‑down runtime.** The deployed copy in
+  `~/Library/Application Support/SlackTeammateTime` is user‑only (`700`).
+- **No elevated privileges.** Everything runs as your user — no `sudo`, no setuid,
+  and Slack itself is never modified.
+
+### How we ran the security check
+
+1. **Dependency scan** — `npm audit` (**0 vulnerabilities**). Re‑run with `npm audit`.
+2. **Manual code review** of every file: CDP attack surface, token handling, the
+   same‑origin API call, DOM/XSS safety, the shell scripts / LaunchAgents, and the
+   menu bar app + its state file.
+3. **Static checks** — `bash -n` on scripts, `node --check` on JS,
+   `plutil -lint` on plists, `codesign --verify` on the built app.
+
+### Residual risk (by design)
+
+Enabling the CDP port gives full control of your Slack session to **anything that
+can connect to it**. We restrict it to localhost + one allowed origin, which stops
+remote/web attackers — but another program already running on your Mac **as you**
+could connect too. This is inherent to any CDP‑based approach; a local attacker
+with code execution as your user can generally already reach your data. If that's
+unacceptable for your threat model, use it on demand and Uninstall when done.
+
+> This is an unofficial, local enhancement. It only reads timezone info Slack
+> already shows on profiles. Modifying client behavior is technically outside
+> Slack's ToS — use at your discretion.
+
+## FAQ
+
+**Does it work on the Slack mobile app?**
+Not with this approach — and that's a deliberate trade‑off. The whole point is
+*no login, no admin, no installed Slack app*. Mobile Slack is a native, sandboxed
+app that can't be extended without either jailbreaking your phone or building an
+approved Slack app/bot (which needs workspace‑admin approval — exactly what we're
+avoiding). The good news: Slack **already** shows a person's local time on their
+profile on mobile (tap their name). This tool is about removing that extra tap on
+the **desktop**, where you do most of your typing.
+
+**Will a Slack update break it?**
+It attaches over CDP and never modifies Slack, so it survives Slack auto‑updates.
+Slack's DOM class names are obfuscated and can change; if a future update moves
+things, the selectors at the top of `inject.js` (`SELECTORS`) are easy to adjust.
+
+**Do I need to keep a Terminal open / restart it daily?**
+No. It installs a per‑user login agent that runs continuously and restarts the
+helper automatically. Install once and forget it.
+
+**Is it really free?** Yes — free and open source under the MIT license.
+
+## Build from source
+
+Requires the Xcode toolchain (for the universal menu bar binary) and Node (only to
+bundle dependencies — end users need nothing).
 
 ```bash
 ./build-mac-app.sh   # downloads Node (arm64 + x64), compiles a universal app, builds the .dmg
 ```
 
-Outputs `dist/SlackTeammateTime.app` and `dist/SlackTeammateTime.dmg`. The app is
-self-contained (bundled Node for both CPUs + dependencies), is a **universal
-binary** (Intel + Apple Silicon), and is **ad-hoc signed but not notarized** —
-users approve it once via right-click → Open. Publish the `.dmg` as a GitHub
-Release asset so teammates download a single file. On first launch the app copies
-itself to `~/Applications`, deploys the engine, and registers a login item.
+Outputs `dist/SlackTeammateTime.app` (universal, ad‑hoc signed) and
+`dist/SlackTeammateTime.dmg`. On first launch the app copies itself to
+`~/Applications`, deploys the background engine, and registers a login item.
 
-## Verifying / troubleshooting
+### Distribution / removing the Gatekeeper prompt
 
-Check what's rendered live:
+Ad‑hoc signing works for personal use. To share without the one‑time
+right‑click → Open, sign with a Developer ID certificate and notarize:
 
 ```bash
-node verify.js
+codesign --force --deep --options runtime --sign "Developer ID Application: NAME (TEAMID)" "dist/SlackTeammateTime.app"
+ditto -c -k --keepParent "dist/SlackTeammateTime.app" SlackTeammateTime.zip
+xcrun notarytool submit SlackTeammateTime.zip --apple-id you@example.com --team-id TEAMID --password APP_SPECIFIC_PW --wait
+xcrun stapler staple "dist/SlackTeammateTime.app"
 ```
 
-- **No labels appear:** make sure Slack was launched via `./launch-slack.sh`
-  (a normally-opened Slack has no debug port). Confirm with:
-  `curl -s http://127.0.0.1:9229/json/version`.
-- **A teammate shows no time:** they may have no timezone set in Slack, or be a
-  bot/app. You can force a timezone — see "Manual overrides".
-- **Times look stale:** they refresh every 60s; reopening the conversation also
-  refreshes immediately.
+## Project layout
 
-## Manual overrides
+| Path | Purpose |
+| --- | --- |
+| `app/SlackTeammateTime.swift` | The menu bar app (toggle, install/uninstall, login item). |
+| `app/setup.sh` | Silent, arch‑aware engine deploy/uninstall used by the app. |
+| `app/Info.plist`, `app/AppIcon.icns` | App bundle metadata and icon. |
+| `build-mac-app.sh` | Builds the universal `.app` + `.dmg`. |
+| `injector.js` | Node daemon: attaches to Slack via CDP, injects the script, watches the on/off state. |
+| `inject.js` | The in‑page script (timezone lookup + inline labels + minute refresh + live toggle). |
+| `launch-slack.sh` | Relaunches Slack with the debug + allow‑origins flags. |
+| `run.sh` | Ensures Slack is up with the port, then runs the injector (used by the login agent). |
+| `install-agent.sh` / `uninstall-agent.sh` | Install / remove the login auto‑start (developer flow). |
+| `docs/` | GitHub Pages landing page and images. |
 
-If the API can't resolve someone, edit `inject.js` and add their Slack user id
-(the `data-message-sender` value) to `OVERRIDES` with an IANA timezone:
+## Manual timezone overrides
+
+If the API can't resolve someone, edit `inject.js` and add their Slack user id to
+`OVERRIDES` with an IANA timezone:
 
 ```js
 OVERRIDES: {
@@ -224,96 +309,29 @@ OVERRIDES: {
 },
 ```
 
-The daemon re-reads `inject.js` on each (re)injection, so reload Slack (Cmd+R)
-or restart `injector.js` to apply. If you use auto-start, re-run
-`./install-agent.sh` to redeploy the edited file.
+Reload Slack (Cmd+R) to apply. If installed via the app, re‑run the installer (or
+`./install-agent.sh`) to redeploy the edited file.
 
-## Sharing with teammates
+## Troubleshooting
 
-Nothing personal is stored in these files — each person's copy reads *their own*
-Slack session token at runtime — so the same files work for anyone on any
-workspace. Either point them at this repo (Option A/B above) or build a zip:
+- **No times appear:** make sure Slack was launched with the debug port. Confirm
+  with `curl -s http://127.0.0.1:9229/json/version`. The login agent handles this
+  automatically; if you opened Slack manually, the agent relaunches it.
+- **A teammate shows no time:** they may have no timezone set in Slack, or be a
+  bot/app (skipped). Use `OVERRIDES` to force one.
+- **Times look stale:** they refresh every 60s; reopening the conversation also
+  refreshes immediately.
 
-```bash
-./package-for-sharing.sh   # creates dist/SlackTeammateTime.zip
-```
+## License
 
-## Security
+MIT © Gobinda Tarafdar. See [LICENSE](LICENSE).
 
-This project was security-reviewed. Summary of how the check was run, what was
-found, and what was hardened.
+---
 
-### How we ran the security check
+<div align="center">
 
-1. **Dependency scan** — `npm audit` (result: **0 vulnerabilities**). The only
-   runtime dependency is `chrome-remote-interface` (→ `commander`, `ws`).
-   Re-run any time with:
-   ```bash
-   npm audit
-   npm ls --all
-   ```
-2. **Manual code review** of every file, focused on: the CDP debug-port attack
-   surface, Slack token handling, the same-origin API call, DOM/XSS safety in
-   the injected script, the shell scripts / LaunchAgents (command injection,
-   PATH, quoting, privileges, file permissions), and the menu bar app
-   (`SlackTeammateTime.swift`) + its on/off state file.
-3. **Static checks** — `bash -n` syntax validation on every script,
-   `node --check` on the JS, `plutil -lint` on the generated plists, and
-   `codesign --verify` on the built app.
+Slack is a trademark of Slack Technologies. This project is independent and
+unofficial, runs fully on your Mac, and only reads timezone information Slack
+already shows on profiles.
 
-### What was hardened
-
-- **Integrity-checked installs:** installers now prefer `npm ci` (verifies the
-  lockfile's integrity hashes) over `npm install` when a lockfile is present.
-- **Safe plist generation:** the LaunchAgent is rendered with an XML-escaped
-  substitution instead of `sed`, avoiding delimiter/XML-injection edge cases for
-  unusual home paths.
-- **Locked-down runtime:** the deployed copy in
-  `~/Library/Application Support/SlackTeammateTime` is set to `700` (user-only),
-  since `inject.js` is executed verbatim inside your Slack session.
-- **Toggle carries no code.** The menu bar on/off control only writes a plain
-  boolean to `state.json` (`{"enabled": true|false}`); the injector reads just
-  that boolean — it never evaluates anything from the file — so the toggle path
-  can't be used to inject code.
-- **Universal app, ad-hoc signed.** The shipped app is code-signed (ad-hoc) and
-  built from the source in `app/`. It is not notarized (no paid Apple account),
-  hence the one-time right-click → Open.
-
-### Built-in protections (already in place)
-
-- **Token never leaves Slack's origin.** `inject.js` reads Slack's own in-page
-  token and only POSTs it to the **same-origin** `/api/users.info`. It is never
-  sent anywhere else, never logged, and never written to disk.
-- **No XSS.** All injected text uses `textContent` / element properties (never
-  `innerHTML`), so API/profile data cannot execute as markup.
-- **Debug port is localhost-only.** Chromium binds `--remote-debugging-port` to
-  `127.0.0.1` by default (not the network), and we set
-  `--remote-allow-origins=http://127.0.0.1:<port>` (a specific origin, **not**
-  `*`). Combined with Chromium's `Host`-header validation, this blocks remote
-  websites and DNS-rebinding from connecting.
-- **No elevated privileges.** Everything runs as your user — no `sudo`, no
-  setuid, and Slack itself is never modified.
-
-### Residual risk you should know about (by design)
-
-Enabling the Chrome DevTools Protocol port gives **full control of your Slack
-session to anything that can connect to it**. We restrict it to localhost + a
-single allowed origin, which stops remote/web attackers — but **another program
-already running on your Mac as your user** could connect to `127.0.0.1:9229` and
-read/act in Slack. This is inherent to any CDP-based approach. If that risk is
-unacceptable for your threat model, don't run this (or only run it on demand and
-stop it when finished via `./uninstall-agent.sh`). A local attacker with code
-execution as your user can generally already access your data regardless.
-
-> Reminder: this is an unofficial, local enhancement and is technically outside
-> Slack's ToS. It only reads timezone info Slack already shows on profiles.
-
-## Notes / caveats
-
-- Slack's DOM class names are obfuscated and can change; selectors live at the
-  top of `inject.js` (`SELECTORS`) and are easy to adjust if a future update
-  moves things around.
-- The debug port is bound to `127.0.0.1` only (localhost), and CDP connections
-  are restricted via `--remote-allow-origins`.
-- Tested on Slack 4.50.x (Electron 42) on macOS. Other versions should work but
-  may need selector tweaks.
+</div>

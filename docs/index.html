@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Slack Teammate Time — see everyone's local time, right in Slack</title>
+<meta name="description" content="A tiny, fully-local macOS menu-bar app that shows each teammate's local time next to their name in Slack. No login, no admin, no Marketplace app. Free & open source." />
+<link rel="icon" href="assets/icon.png" />
+<meta property="og:title" content="Slack Teammate Time" />
+<meta property="og:description" content="See every teammate's local time right next to their name in Slack. Fully local macOS menu-bar app — no login, no admin." />
+<meta property="og:image" content="https://gtarafdar.github.io/slack-teammate-local-time/assets/icon.png" />
+<meta property="og:url" content="https://gtarafdar.github.io/slack-teammate-local-time/" />
+<meta name="twitter:card" content="summary_large_image" />
+<style>
+  :root{
+    --bg:#120f24; --bg2:#15122c; --panel:#1c1838; --panel2:#221d44;
+    --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.14);
+    --ink:#ece9ff; --muted:#a59fce; --muted2:#8b85b6;
+    --accent:#8b7cf0; --accent2:#b6a8f2; --accent3:#6c5cd6;
+    --radius:18px; --maxw:1080px;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;font-family:var(--font);color:var(--ink);line-height:1.6;
+    background:
+      radial-gradient(900px 600px at 80% -10%, rgba(139,124,240,.22), transparent 60%),
+      radial-gradient(700px 500px at -10% 10%, rgba(108,92,214,.18), transparent 55%),
+      var(--bg);
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .muted{color:var(--muted)}
+  .eyebrow{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--accent2);
+    background:rgba(139,124,240,.12);border:1px solid var(--line2);
+    padding:6px 12px;border-radius:999px}
+
+  /* Nav */
+  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);
+    background:rgba(18,15,36,.72);border-bottom:1px solid var(--line)}
+  .nav-in{display:flex;align-items:center;gap:18px;height:64px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.01em}
+  .brand img{width:30px;height:30px;border-radius:8px}
+  .nav-links{margin-left:auto;display:flex;gap:24px;align-items:center}
+  .nav-links a{color:var(--muted);font-weight:600;font-size:15px}
+  .nav-links a:hover{color:var(--ink)}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-weight:700;
+    padding:11px 18px;border-radius:12px;border:1px solid transparent;cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease, background .15s ease}
+  .btn:hover{transform:translateY(-1px)}
+  .btn-primary{background:linear-gradient(180deg,var(--accent2),var(--accent3));color:#160f2e;
+    box-shadow:0 10px 30px rgba(139,124,240,.35)}
+  .btn-ghost{border-color:var(--line2);color:var(--ink);background:rgba(255,255,255,.03)}
+  .nav .btn{padding:9px 15px;font-size:14px}
+  @media(max-width:760px){.nav-links a:not(.btn){display:none}}
+
+  /* Hero */
+  .hero{padding:84px 0 40px;text-align:center}
+  .hero img.appicon{width:96px;height:96px;border-radius:22px;
+    box-shadow:0 20px 50px rgba(0,0,0,.45);margin-bottom:22px}
+  .hero h1{font-size:clamp(34px,6vw,60px);line-height:1.05;margin:.2em 0 .25em;
+    letter-spacing:-.02em;font-weight:850;
+    background:linear-gradient(180deg,#fff,#c9c2ff);-webkit-background-clip:text;
+    background-clip:text;color:transparent}
+  .hero p.lead{font-size:clamp(17px,2.4vw,21px);color:var(--muted);max-width:680px;margin:0 auto 26px}
+  .cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .chips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+  .chip{font-size:13px;color:var(--muted);border:1px solid var(--line);
+    background:rgba(255,255,255,.03);padding:7px 13px;border-radius:999px}
+  .chip b{color:var(--accent2)}
+
+  /* Window frame for screenshots */
+  .frame{margin:42px auto 0;max-width:980px;border:1px solid var(--line2);
+    border-radius:16px;overflow:hidden;background:var(--panel);
+    box-shadow:0 30px 80px rgba(0,0,0,.5)}
+  .frame .bar{display:flex;gap:7px;padding:12px 14px;background:rgba(255,255,255,.04);
+    border-bottom:1px solid var(--line)}
+  .frame .bar i{width:11px;height:11px;border-radius:50%;display:inline-block}
+  .frame .bar i:nth-child(1){background:#ff5f57}
+  .frame .bar i:nth-child(2){background:#febc2e}
+  .frame .bar i:nth-child(3){background:#28c840}
+  .frame img{display:block;width:100%}
+
+  /* Sections */
+  section{padding:64px 0}
+  .sec-head{text-align:center;max-width:680px;margin:0 auto 40px}
+  .sec-head h2{font-size:clamp(26px,4vw,38px);margin:14px 0 10px;letter-spacing:-.02em;font-weight:800}
+  .sec-head p{color:var(--muted);font-size:17px;margin:0}
+
+  .grid{display:grid;gap:18px}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:860px){.g3,.g2{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg,var(--panel),var(--bg2));
+    border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+  .card h3{margin:6px 0 8px;font-size:18px}
+  .card p{margin:0;color:var(--muted);font-size:15px}
+  .tag{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent2)}
+  .step-n{font-size:13px;font-weight:800;color:var(--accent2);
+    border:1px solid var(--line2);border-radius:999px;padding:3px 10px;display:inline-block}
+
+  .shots{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+  @media(max-width:860px){.shots{grid-template-columns:1fr}}
+  .shot{border:1px solid var(--line2);border-radius:14px;overflow:hidden;background:var(--panel)}
+  .shot img{display:block;width:100%}
+  .shot .cap{padding:12px 16px;color:var(--muted);font-size:14px}
+
+  .feat{display:flex;flex-direction:column;gap:6px}
+  .feat .tag{margin-bottom:2px}
+
+  /* Install */
+  .install{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center}
+  @media(max-width:860px){.install{grid-template-columns:1fr}}
+  ol.steps{counter-reset:s;list-style:none;padding:0;margin:0}
+  ol.steps li{position:relative;padding:12px 0 12px 46px;border-bottom:1px solid var(--line)}
+  ol.steps li:last-child{border-bottom:0}
+  ol.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:11px;
+    width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-weight:800;
+    color:#160f2e;background:linear-gradient(180deg,var(--accent2),var(--accent3))}
+  .note{background:rgba(139,124,240,.10);border:1px solid var(--line2);
+    border-radius:14px;padding:16px 18px;color:var(--muted);font-size:14px;margin-top:18px}
+  code,kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .reqs{width:100%;border-collapse:collapse}
+  .reqs td{padding:11px 0;border-bottom:1px solid var(--line);font-size:15px;vertical-align:top}
+  .reqs td:first-child{color:var(--muted2);font-weight:700;width:120px}
+
+  /* About */
+  .about{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:start}
+  @media(max-width:680px){.about{grid-template-columns:1fr}}
+  .about img{width:92px;height:92px;border-radius:20px}
+  .links{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+  @media(max-width:680px){.links{grid-template-columns:1fr 1fr}}
+  .links a{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(255,255,255,.02)}
+  .links a:hover{border-color:var(--line2);background:rgba(255,255,255,.05)}
+  .links b{display:block}
+  .links span{color:var(--muted2);font-size:13px}
+
+  .why{max-width:760px;margin:0 auto;text-align:center}
+  .why p{color:var(--muted);font-size:17px}
+  .why .big{font-size:clamp(20px,3vw,26px);color:var(--ink);font-weight:700;margin-bottom:18px}
+
+  .cta-final{text-align:center;background:linear-gradient(180deg,var(--panel2),var(--bg2));
+    border:1px solid var(--line2);border-radius:24px;padding:54px 22px;margin:10px 0}
+
+  footer{border-top:1px solid var(--line);padding:40px 0;color:var(--muted2);font-size:14px}
+  .foot-links{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:16px}
+  .foot-links a{color:var(--muted);font-weight:600}
+
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.is-in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-in">
+    <a class="brand" href="#top"><img src="assets/icon.png" alt="" />Slack Teammate Time</a>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#security">Security</a>
+      <a href="#about">About</a>
+      <a class="btn btn-primary" href="https://github.com/Gtarafdar/slack-teammate-local-time/releases/latest">Download</a>
+    </div>
+  </div>
+</nav>
+
+<header id="top" class="hero">
+  <div class="wrap">
+    <img class="appicon" src="assets/icon.png" alt="Slack Teammate Time icon" />
+    <div class="eyebrow">macOS menu-bar app · fully local</div>
+    <h1>Know your teammate's<br />local time, right in Slack.</h1>
+    <p class="lead">Each person's local time appears next to their name — so you instantly know whether it's a good time to ping them. No login, no admin, no Marketplace app. Slack itself is never touched.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="https://github.com/Gtarafdar/slack-teammate-local-time/releases/latest">⬇ Download for macOS · .dmg</a>
+      <a class="btn btn-ghost" href="#how">See how it works</a>
+    </div>
+    <div class="chips">
+      <span class="chip"><b>Universal</b> — Apple Silicon + Intel</span>
+      <span class="chip">macOS 11+</span>
+      <span class="chip"><b>Free</b> & open source</span>
+      <span class="chip">~15 MB RAM · always-on</span>
+    </div>
+
+    <div class="frame reveal">
+      <div class="bar"><i></i><i></i><i></i></div>
+      <img src="demo.png" alt="Teammate local times shown inline in Slack" />
+    </div>
+    <p class="muted" style="font-size:13px;margin-top:12px">Illustrative mockup with fictional names — not a real conversation.</p>
+  </div>
+</header>
+
+<!-- How it works -->
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">How it works</div>
+      <h2>Three steps, then it disappears</h2>
+      <p>Install once. After that it just shows the times, quietly, and stays out of your way.</p>
+    </div>
+    <div class="grid g3">
+      <div class="card reveal"><span class="step-n">01</span><h3>Install &amp; it self-connects</h3><p>On first launch it attaches to the Slack desktop app already on your Mac — locally, over a localhost-only debug port. No password, no OAuth, no workspace admin.</p></div>
+      <div class="card reveal"><span class="step-n">02</span><h3>It reads timezones from Slack</h3><p>Using the token already in the page, it asks Slack's own API for each teammate's timezone and caches it. Nothing leaves your Mac.</p></div>
+      <div class="card reveal"><span class="step-n">03</span><h3>Inline &amp; live</h3><p>Each sender's local time appears next to their name and refreshes every minute. A menu-bar toggle turns it on/off instantly — no reload.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- Screenshots -->
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">See it</div>
+      <h2>A clock in your menu bar. Times in your messages.</h2>
+      <p>Toggle it on or off in one click. Bots and apps are skipped automatically.</p>
+    </div>
+    <div class="shots">
+      <div class="shot reveal"><img src="assets/menu.png" alt="Menu bar dropdown with on/off toggle" /><div class="cap">One-click on/off from the menu bar — Slack updates live.</div></div>
+      <div class="shot reveal"><img src="demo.png" alt="Inline local times in Slack" /><div class="cap">Your time / their local time when sent / their time now.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Features</div>
+      <h2>Small app, genuinely useful</h2>
+    </div>
+    <div class="grid g3">
+      <div class="card feat reveal"><span class="tag">Inline</span><h3>Local time by every name</h3><p>Each teammate's current local time, refreshed every minute — no profile hover required.</p></div>
+      <div class="card feat reveal"><span class="tag">Context</span><h3>Sent-time + now</h3><p>Older messages also show the sender's local time when they sent it, so timestamps make sense across zones.</p></div>
+      <div class="card feat reveal"><span class="tag">Live</span><h3>One-click on/off</h3><p>A menu-bar clock toggles the times instantly — no reload, no restart.</p></div>
+      <div class="card feat reveal"><span class="tag">Clean</span><h3>Bots &amp; apps skipped</h3><p>Automated senders never get a label, so the message list stays tidy.</p></div>
+      <div class="card feat reveal"><span class="tag">No strings</span><h3>No admin, no login</h3><p>It reuses the Slack session already on your Mac. Works on personal and company workspaces alike.</p></div>
+      <div class="card feat reveal"><span class="tag">Light</span><h3>Featherweight</h3><p>The helper idles at ~15&nbsp;MB RAM and is event-light. The menu-bar app is a tiny native binary.</p></div>
+      <div class="card feat reveal"><span class="tag">Set &amp; forget</span><h3>Always on</h3><p>Starts at login, runs continuously, restarts itself if needed. No daily relaunch, no Mac restart.</p></div>
+      <div class="card feat reveal"><span class="tag">Native</span><h3>Universal &amp; tidy</h3><p>One app for Apple Silicon and Intel. Menu-bar only — and Slack's look and feel is untouched.</p></div>
+      <div class="card feat reveal"><span class="tag">Plug &amp; play</span><h3>No code barrier</h3><p>Download a .dmg, double-click the app, done. No Terminal, no Node.js to install — it's bundled.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- Security -->
+<section id="security">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Security &amp; privacy</div>
+      <h2>Local by design, safe by default</h2>
+      <p>Reviewed automatically with no critical, high, or medium findings — plus defensive hardening.</p>
+    </div>
+    <div class="grid g2">
+      <div class="card reveal"><h3>Everything stays on your Mac</h3><p>The injected script only talks to Slack's own same-origin API — the same thing the official client does. No analytics, no telemetry, no third-party servers.</p></div>
+      <div class="card reveal"><h3>Your token never leaves Slack's origin</h3><p>It's read from the page and only sent to same-origin <code>users.info</code> — never logged, never written to disk, never sent anywhere else.</p></div>
+      <div class="card reveal"><h3>Localhost-only &amp; no XSS</h3><p>The debug port binds to <code>127.0.0.1</code> with a single allowed origin (not <code>*</code>). All injected text uses <code>textContent</code>, never <code>innerHTML</code>.</p></div>
+      <div class="card reveal"><h3>No elevated privileges</h3><p>Everything runs as your user — no <code>sudo</code>, no setuid. Slack itself is never modified, and the deployed runtime is locked to your account.</p></div>
+    </div>
+    <div class="note reveal"><b>Honest note:</b> enabling the debug port lets any program already running on your Mac as you connect to Slack locally — inherent to this approach. It's restricted to localhost + one origin to block remote/web attackers. Use on demand and Uninstall if that's not right for you. This is an unofficial, local enhancement that only reads timezone info Slack already shows on profiles.</div>
+  </div>
+</section>
+
+<!-- Why useful -->
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">For remote teams</div>
+      <h2>Made for how distributed teams actually work</h2>
+    </div>
+    <div class="grid g2">
+      <div class="card reveal"><h3>Ping at the right hour</h3><p>See at a glance whether it's 9 AM or 9 PM for someone before you message — fewer 2 AM buzzes.</p></div>
+      <div class="card reveal"><h3>Zero discipline required</h3><p>No profile hovering, no mental math. The time is just there, every message.</p></div>
+      <div class="card reveal"><h3>Nothing for your team to adopt</h3><p>It's local to your Mac. No app to roll out, no admin to convince, no one else affected.</p></div>
+      <div class="card reveal"><h3>Slack stays Slack</h3><p>The label blends into the existing UI. No theme changes, no clutter, no broken aesthetic.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- Install -->
+<section>
+  <div class="wrap">
+    <div class="install">
+      <div class="reveal">
+        <div class="eyebrow">Install</div>
+        <h2 style="font-size:clamp(24px,3.4vw,32px);margin:14px 0 16px;letter-spacing:-.02em">Plug &amp; play — about a minute</h2>
+        <ol class="steps">
+          <li>Download <b>SlackTeammateTime.dmg</b> and open it.</li>
+          <li>Double-click the <b>SlackTeammateTime</b> app.</li>
+          <li>First launch only: <b>right-click → Open → Open</b> (it's free &amp; unsigned, so Gatekeeper asks once).</li>
+          <li>Click <b>OK</b>. A clock appears in your menu bar — done.</li>
+        </ol>
+        <div class="note">No Apple Developer signature ($99/yr) means macOS shows a one-time "unidentified developer" prompt. <b>Right-click → Open</b> clears it for good. After that it opens normally and starts at every login.</div>
+        <div class="cta" style="justify-content:flex-start;margin-top:22px">
+          <a class="btn btn-primary" href="https://github.com/Gtarafdar/slack-teammate-local-time/releases/latest">⬇ Download</a>
+          <a class="btn btn-ghost" href="https://github.com/Gtarafdar/slack-teammate-local-time">View source on GitHub</a>
+        </div>
+      </div>
+      <div class="reveal">
+        <table class="reqs">
+          <tr><td>macOS</td><td>11.0 Big Sur or later</td></tr>
+          <tr><td>Chip</td><td>Apple Silicon or Intel (universal binary)</td></tr>
+          <tr><td>Slack</td><td>Native desktop app, signed in</td></tr>
+          <tr><td>Download</td><td>One .dmg · no prerequisites (Node bundled)</td></tr>
+          <tr><td>Price</td><td>Free &amp; open source (MIT)</td></tr>
+          <tr><td>Mobile?</td><td>Slack already shows local time on a profile on mobile; this removes the extra tap on desktop. <a href="https://github.com/Gtarafdar/slack-teammate-local-time#faq" style="color:var(--accent2)">Why not mobile →</a></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Final CTA -->
+<section>
+  <div class="wrap">
+    <div class="cta-final reveal">
+      <h2 style="font-size:clamp(24px,4vw,36px);margin:0 0 10px;letter-spacing:-.02em">Stop guessing what time it is for them.</h2>
+      <p class="muted" style="max-width:620px;margin:0 auto 22px">Install once and the local times are just there, every message — quietly, on your own Mac.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://github.com/Gtarafdar/slack-teammate-local-time/releases/latest">⬇ Download for macOS</a>
+        <a class="btn btn-ghost" href="https://github.com/Gtarafdar/slack-teammate-local-time">⭐ Star on GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- About -->
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="eyebrow">About the maker</div></div>
+    <div class="about reveal">
+      <img src="assets/icon.png" alt="" />
+      <div>
+        <h2 style="margin:0 0 4px;font-size:24px">Gobinda Tarafdar</h2>
+        <p class="muted" style="margin:0 0 12px">WordPress product marketer · stubborn problem-solver · lifelong Harry Potter devotee</p>
+        <p class="muted" style="margin:0">By day I'm the Product Marketing Specialist at <b style="color:var(--ink)">WPBakery</b> — the page builder that quietly powers a sizeable corner of the WordPress universe. Before that, I helped a single plugin cross <b style="color:var(--ink)">400,000+ active users</b>. When the day-job owl flies home, I tinker on my own little workshop of spells — Slack Teammate Time is one of them.</p>
+        <div class="links">
+          <a href="#"><b>WPBakery ↗</b><span>The page builder I market.</span></a>
+          <a href="#"><b>Docscriber ↗</b><span>Documentation, conjured.</span></a>
+          <a href="#"><b>TheRecaller ↗</b><span>A memory charm for the web.</span></a>
+          <a href="#"><b>TheEditra ↗</b><span>A video-editing cauldron.</span></a>
+          <a href="#"><b>The Quill Press ↗</b><span>Tech news, Daily Prophet style.</span></a>
+          <a href="#"><b>Costlas ↗</b><span>Cost-of-living, 140 countries.</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Why -->
+<section>
+  <div class="wrap why reveal">
+    <div class="eyebrow">Why I built this</div>
+    <p class="big">Slack already knows everyone's local time — but it's hidden behind a hover, and it slips your mind exactly when you need it.</p>
+    <p>I kept doing the mental math wrong, or pinging a teammate right in the middle of their evening. I wanted that time right there in the conversation — but I didn't want to bother a workspace admin or push everyone onto a Marketplace app most of them would never need.</p>
+    <p>So I built a tiny thing for myself that just <em>shows</em> it — inline, quietly, without breaking Slack's look and feel. It runs entirely on your own Mac, needs no admin and no login, and it's free. It's especially handy for remote teams across timezones. If you've ever felt the same, it's yours too.</p>
+  </div>
+</section>
+
+<!-- Support -->
+<section>
+  <div class="wrap">
+    <div class="cta-final reveal">
+      <div class="eyebrow">Support</div>
+      <h2 style="font-size:clamp(22px,3.4vw,30px);margin:12px 0 8px">If it saves you a hover, give it a star</h2>
+      <p class="muted" style="max-width:560px;margin:0 auto 22px">Free and open source. A GitHub star helps others find it; a small donation keeps the workshop lit.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://github.com/Gtarafdar/slack-teammate-local-time">⭐ Star on GitHub</a>
+        <a class="btn btn-ghost" href="https://x.com/Gtarafdarr">🐦 Follow on X</a>
+        <a class="btn btn-ghost" href="https://github.com/Gtarafdar/slack-teammate-local-time">❤️ Donate</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-links">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#security">Security</a>
+      <a href="#about">About</a>
+      <a href="https://github.com/Gtarafdar/slack-teammate-local-time">GitHub</a>
+      <a href="https://x.com/Gtarafdarr">X / Twitter</a>
+    </div>
+    <p>Slack Teammate Time · runs fully on your Mac · talks only to Slack's same-origin API. Slack is a trademark of Slack Technologies; this project is independent and unofficial. © 2026 Gobinda Tarafdar · MIT.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var els = document.querySelectorAll('.reveal');
+  if(!('IntersectionObserver' in window)){els.forEach(function(el){el.classList.add('is-in');});return;}
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('is-in'); io.unobserve(e.target); }});
+  },{rootMargin:'0px 0px -8% 0px',threshold:0.06});
+  els.forEach(function(el){io.observe(el);});
+})();
+</script>
+</body>
+</html>
