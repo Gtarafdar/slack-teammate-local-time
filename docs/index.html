@@ -144,6 +144,14 @@
 
   .cta-final{text-align:center;background:linear-gradient(180deg,var(--panel2),var(--bg2));
     border:1px solid var(--line2);border-radius:24px;padding:54px 22px;margin:10px 0}
+  .stars{font-size:clamp(28px,5vw,40px);letter-spacing:.18em;color:#ffce5a;
+    text-shadow:0 2px 18px rgba(255,206,90,.45);margin-bottom:6px;line-height:1}
+  .stars span{display:inline-block;animation:pop .5s ease both}
+  .stars span:nth-child(2){animation-delay:.08s}
+  .stars span:nth-child(3){animation-delay:.16s}
+  .stars span:nth-child(4){animation-delay:.24s}
+  .stars span:nth-child(5){animation-delay:.32s}
+  @keyframes pop{from{opacity:0;transform:translateY(8px) scale(.6)}to{opacity:1;transform:none}}
 
   footer{border-top:1px solid var(--line);padding:40px 0;color:var(--muted2);font-size:14px}
   .foot-links{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:16px}
@@ -326,6 +334,20 @@
   </div>
 </section>
 
+<!-- Star rating -->
+<section>
+  <div class="wrap">
+    <div class="cta-final reveal">
+      <div class="stars" aria-label="five stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+      <h2 style="font-size:clamp(22px,3.4vw,30px);margin:8px 0 8px">Love it? Leave a star.</h2>
+      <p class="muted" style="max-width:540px;margin:0 auto 22px">It's free and open source — a star takes one click, costs nothing, and is the best way to say thanks and help others find it.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://github.com/Gtarafdar/slack-teammate-local-time/stargazers">⭐ Rate it — star on GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- About -->
 <section id="about">
   <div class="wrap">
@@ -337,12 +359,12 @@
         <p class="muted" style="margin:0 0 12px">WordPress product marketer · stubborn problem-solver · lifelong Harry Potter devotee</p>
         <p class="muted" style="margin:0">By day I'm the Product Marketing Specialist at <b style="color:var(--ink)">WPBakery</b> — the page builder that quietly powers a sizeable corner of the WordPress universe. Before that, I helped a single plugin cross <b style="color:var(--ink)">400,000+ active users</b>. When the day-job owl flies home, I tinker on my own little workshop of spells — Slack Teammate Time is one of them.</p>
         <div class="links">
-          <a href="#"><b>WPBakery ↗</b><span>The page builder I market.</span></a>
-          <a href="#"><b>Docscriber ↗</b><span>Documentation, conjured.</span></a>
-          <a href="#"><b>TheRecaller ↗</b><span>A memory charm for the web.</span></a>
-          <a href="#"><b>TheEditra ↗</b><span>A video-editing cauldron.</span></a>
-          <a href="#"><b>The Quill Press ↗</b><span>Tech news, Daily Prophet style.</span></a>
-          <a href="#"><b>Costlas ↗</b><span>Cost-of-living, 140 countries.</span></a>
+          <a href="https://wpbakery.com/" target="_blank" rel="noopener"><b>WPBakery ↗</b><span>The page builder I market.</span></a>
+          <a href="https://thedocscriber.com/" target="_blank" rel="noopener"><b>Docscriber ↗</b><span>Documentation, conjured.</span></a>
+          <a href="https://therecaller.com/" target="_blank" rel="noopener"><b>TheRecaller ↗</b><span>A memory charm for the web.</span></a>
+          <a href="https://theeditra.com/" target="_blank" rel="noopener"><b>TheEditra ↗</b><span>A video-editing cauldron.</span></a>
+          <a href="https://thequillpress.com/" target="_blank" rel="noopener"><b>The Quill Press ↗</b><span>Tech news, Daily Prophet style.</span></a>
+          <a href="https://costlas.com/" target="_blank" rel="noopener"><b>Costlas ↗</b><span>Cost-of-living, 140 countries.</span></a>
         </div>
       </div>
     </div>
@@ -368,8 +390,9 @@
       <p class="muted" style="max-width:560px;margin:0 auto 22px">Free and open source. A GitHub star helps others find it; a small donation keeps the workshop lit.</p>
       <div class="cta">
         <a class="btn btn-primary" href="https://github.com/Gtarafdar/slack-teammate-local-time">⭐ Star on GitHub</a>
+        <a class="btn btn-ghost" href="https://gtarafdar.com/donate">❤️ Donate</a>
         <a class="btn btn-ghost" href="https://x.com/Gtarafdarr">🐦 Follow on X</a>
-        <a class="btn btn-ghost" href="https://github.com/Gtarafdar/slack-teammate-local-time">❤️ Donate</a>
+        <a class="btn btn-ghost" href="https://www.linkedin.com/in/gobinda-tarafdar/">💼 LinkedIn</a>
       </div>
     </div>
   </div>
@@ -383,7 +406,9 @@
       <a href="#security">Security</a>
       <a href="#about">About</a>
       <a href="https://github.com/Gtarafdar/slack-teammate-local-time">GitHub</a>
+      <a href="https://gtarafdar.com/donate">Donate</a>
       <a href="https://x.com/Gtarafdarr">X / Twitter</a>
+      <a href="https://www.linkedin.com/in/gobinda-tarafdar/">LinkedIn</a>
     </div>
     <p>Slack Teammate Time · runs fully on your Mac · talks only to Slack's same-origin API. Slack is a trademark of Slack Technologies; this project is independent and unofficial. © 2026 Gobinda Tarafdar · MIT.</p>
   </div>

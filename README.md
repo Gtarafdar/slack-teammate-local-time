@@ -137,21 +137,30 @@ Teammate Time is one of them.
 
 **Also from the workshop:**
 
-- **WPBakery** — the page builder I do product marketing for.
-- **Docscriber** — documentation, conjured.
-- **TheRecaller** — a memory charm for what you forget online.
-- **TheEditra** — a video‑editing cauldron of my own brewing.
-- **The Quill Press** — tech news styled after the Daily Prophet.
-- **Costlas** — cost‑of‑living for 140 countries & 1,377 cities.
+- **[WPBakery](https://wpbakery.com/)** — the page builder I do product marketing for.
+- **[Docscriber](https://thedocscriber.com/)** — documentation, conjured.
+- **[TheRecaller](https://therecaller.com/)** — a memory charm for what you forget online.
+- **[TheEditra](https://theeditra.com/)** — a video‑editing cauldron of my own brewing.
+- **[The Quill Press](https://thequillpress.com/)** — tech news styled after the Daily Prophet.
+- **[Costlas](https://costlas.com/)** — cost‑of‑living for 140 countries & 1,377 cities.
+
+## ⭐ Rate it
+
+If this saves you even one mistimed ping, a star means a lot — it's the simplest
+way to say *"keep going,"* and it's how other people discover the app.
+
+> **★ ★ ★ ★ ★** — one click on GitHub.
+
+[![Star on GitHub](https://img.shields.io/github/stars/Gtarafdar/slack-teammate-local-time?style=social)](https://github.com/Gtarafdar/slack-teammate-local-time/stargazers)
 
 ## Support this project
 
 If it saves you a hover, here's how to help — all optional, all appreciated:
 
 - ⭐ **[Star it on GitHub](https://github.com/Gtarafdar/slack-teammate-local-time)** — helps others find it.
+- ❤️ **[Donate](https://gtarafdar.com/donate)** — keeps the workshop lit.
 - 🐦 **[Follow on X / Twitter](https://x.com/Gtarafdarr)**
-- ❤️ **Donate** — keeps the workshop lit. <!-- TODO: add your donation link (Buy Me a Coffee / Ko-fi / GitHub Sponsors) -->
-- 💼 **Connect on LinkedIn** <!-- TODO: add your LinkedIn URL -->
+- 💼 **[Connect on LinkedIn](https://www.linkedin.com/in/gobinda-tarafdar/)**
 
 ## Requirements
 
